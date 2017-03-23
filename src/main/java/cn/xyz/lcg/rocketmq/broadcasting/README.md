@@ -1,0 +1,1 @@
+broadcasting指的是消费者分组无效. Consumer可多次运行, 每次运行均有消息消费

@@ -1,0 +1,54 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+  http://activemq.apache.org/camel/schema/spring http://activemq.apache.org/camel/schema/spring/camel-spring.xsd">
+
+	<!-- Allows us to use system properties as variables in this configuration 
+		file -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<value>file:${activemq.conf}/credentials.properties</value>
+		</property>
+	</bean>
+
+	<broker xmlns="http://activemq.apache.org/schema/core"
+		brokerName="centOS1" persistent="true" useJmx="true" dataDirectory="${activemq.base}/data">
+
+		<!-- The transport connectors ActiveMQ will listen to -->
+		<transportConnectors>
+			<transportConnector name="openwire" uri="tcp://0.0.0.0:61616" />
+		</transportConnectors>
+
+		<!-- jmx configure createConnector: true表示创建自己的jmx连接, 而不使用jvm默认的jmx连接 connectorPort: 
+			连接端口 更多信息参考 http://activemq.apache.org/jmx.html -->
+		<managementContext>
+			<managementContext createConnector="true"
+				connectorPort="1098" />
+		</managementContext>
+
+		<plugins>
+			<bean xmlns="http://www.springframework.org/schema/beans" id="ipAuthenticationPlugin"
+				class="cn.xyz.lcg.activemq.security.IPAuthenticationPlugin">
+				<property name="allowedIPAddresses">
+					<list>
+						<value>127.0.0.1</value>
+						<value>192.168.27.92</value>
+					</list>
+				</property>
+			</bean>		
+		</plugins>
+		
+		<messageAuthorizationPolicy>
+			<bean class="cn.xyz.lcg.activemq.security.AuthorizationPolicy"
+				xmlns="http://www.springframework.org/schema/beans" />
+		</messageAuthorizationPolicy>
+
+	</broker>
+	
+
+
+	<import resource="jetty.xml" />
+
+</beans>

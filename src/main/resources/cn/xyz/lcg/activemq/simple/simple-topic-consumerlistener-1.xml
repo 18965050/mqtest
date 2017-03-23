@@ -1,0 +1,44 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+ http://activemq.apache.org/camel/schema/spring http://activemq.apache.org/camel/schema/spring/camel-spring.xsd "
+	default-lazy-init="false">
+
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://centOS1:61616" />
+	</bean>
+
+	<!-- 发送消息的目的地（主题） -->
+	<bean id="topicDest"
+		class="org.apache.activemq.command.ActiveMQTopic">
+		<!-- 设置消息队列的名字 -->
+		<constructor-arg index="0" value="myTopic" />
+	</bean>
+
+	<!-- 配置TopicJms模板  -->
+	<bean id="jmsTopicTemplate"
+		class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="defaultDestination" ref="topicDest" />
+		<!-- 配置是否为发布订阅者模式，默认为false -->
+		<property name="pubSubDomain" value="true"/>
+		<property name="receiveTimeout" value="10000" />
+	</bean>
+
+	<bean id="firstMessageListener" class="cn.xyz.lcg.activemq.simple.topic.FirstMessageListener" />
+	<bean id="secondMessageListener" class="cn.xyz.lcg.activemq.simple.topic.SecondMessageListener" />
+
+    <bean id="firstTopicListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="topicDest" /> 
+	  	<property name="messageListener" ref="firstMessageListener" />
+    </bean>  
+  
+    <bean id="secondTopicListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="topicDest" />  
+	   <property name="messageListener" ref="secondMessageListener" />
+    </bean>
+
+</beans> 

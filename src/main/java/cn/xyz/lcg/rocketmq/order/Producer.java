@@ -34,7 +34,7 @@ public class Producer {
 		try {
 			DefaultMQProducer producer = new DefaultMQProducer("orderProducer");
 
-			producer.setNamesrvAddr("localhost:9876");
+			producer.setNamesrvAddr("centOS1:9876");
 
 			// 设置队列数,和tag数一致, 这样观察比较直观
 			producer.setDefaultTopicQueueNums(5);

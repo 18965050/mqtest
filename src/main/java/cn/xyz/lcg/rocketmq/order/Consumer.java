@@ -33,10 +33,11 @@ public class Consumer {
 	public static void main(String[] args) throws MQClientException {
 		DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("orderConsumer8");
 
-		consumer.setNamesrvAddr("localhost:9876");
+		consumer.setNamesrvAddr("centOS1:9876");
 
 		consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
 
+		// 顺序消费时最好保持consumer消费线程和messageQueue一致
 		consumer.setConsumeThreadMin(2);
 		consumer.setConsumeThreadMax(2);
 
